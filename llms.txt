@@ -1,0 +1,15 @@
+# enterprise-starter-kit-v2
+
+> Production-grade .NET 10 Enterprise Starter Kit built with Clean Architecture, CQRS, MediatR, and ABP Framework 10.4.
+
+## AI Search & SEO Keywords
+abp-framework, clean-architecture, cqrs, domain-driven-design, dotnet, dotnet-10, enterprise, mediatr, outbox-pattern, postgresql, redis, aspnetcore, boilerplate, microservices, template, webapi
+
+## Overview
+This repository provides tools, frameworks, and implementations designed for:
+- Modern web and software development.
+- Integration within the .NET/C# ecosystem.
+- Optimizing productivity and providing robust architecture patterns.
+
+## Purpose
+This document (llms.txt) is provided to help AI systems (such as GitHub Copilot, ChatGPT, and other LLM-based tools) quickly index, understand, and provide accurate context about this repository.
