@@ -1,0 +1,94 @@
+version: "3.9"
+
+# ────────────────────────────────────────────────────────────────────────────
+#  EnterpriseKit Local Dev Stack
+#
+#  Services:
+#    postgres  — Primary database (PostgreSQL 16)
+#    redis     — ABP distributed cache + session store
+#    mailhog   — SMTP mock (view captured emails at http://localhost:8025)
+#
+#  Start:  docker compose up -d
+#  Stop:   docker compose down
+#  Reset:  docker compose down -v   (WARNING: destroys data volumes)
+# ────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── PostgreSQL ──────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: ek_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: enterprise
+      POSTGRES_PASSWORD: S3cr3tPass!
+      POSTGRES_DB: enterprise_kit
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U enterprise -d enterprise_kit"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ── Redis ───────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: ek_redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --requirepass R3d!sPass
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "R3d!sPass", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ── MailHog — SMTP mock server ──────────────────────────────────────────
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: ek_mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"   # SMTP — point your app here
+      - "8025:8025"   # Web UI — http://localhost:8025
+
+  # ── API (commented out; run locally with `dotnet run` for hot-reload) ───
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: src/HttpApi/EnterpriseKit.HttpApi/Dockerfile
+  #   container_name: ek_api
+  #   restart: unless-stopped
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   ports:
+  #     - "5000:8080"
+  #   environment:
+  #     ASPNETCORE_ENVIRONMENT: Production
+  #     ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=enterprise_kit;Username=enterprise;Password=S3cr3tPass!"
+  #     ConnectionStrings__Redis: "redis:6379,password=R3d!sPass"
+  #     Email__Host: mailhog
+  #     Email__Port: 1025
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

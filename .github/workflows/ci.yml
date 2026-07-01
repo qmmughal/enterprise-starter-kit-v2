@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: enterprise
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: enterprise_kit_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Unit Tests
+        run: >
+          dotnet test tests/Domain.UnitTests/Domain.UnitTests.csproj
+          --no-build --configuration Release
+          --logger "trx;LogFileName=domain-results.trx"
+          --collect:"XPlat Code Coverage"
+
+      - name: Application Tests
+        run: >
+          dotnet test tests/Application.UnitTests/Application.UnitTests.csproj
+          --no-build --configuration Release
+          --logger "trx;LogFileName=application-results.trx"
+          --collect:"XPlat Code Coverage"
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/*.trx'

@@ -1,0 +1,17 @@
+version: "3.9"
+# ── Developer overrides (git-ignored) ────────────────────────────────────────
+# This file overrides docker-compose.yml for local development convenience.
+# Add this file to .gitignore if you put secrets here.
+services:
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: localdev  # weaker password for local only
+    ports:
+      - "5432:5432"
+
+  redis:
+    command: >
+      redis-server
+      --requirepass localdev
+      --maxmemory 128mb
+      --maxmemory-policy allkeys-lru
