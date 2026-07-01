@@ -1,204 +1,91 @@
-# 🏗️ EnterpriseKit V2 — .NET Enterprise Starter Kit
+# 🏗️ EnterpriseKit V2 — .NET 10 Enterprise Starter Kit
 
 [![CI](https://github.com/qmmughal/enterprise-starter-kit-v2/actions/workflows/ci.yml/badge.svg)](https://github.com/qmmughal/enterprise-starter-kit-v2/actions/workflows/ci.yml)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+[![ABP Framework](https://img.shields.io/badge/ABP-10.4-F47216?logo=abp)](https://abp.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A **production-grade, open-source Enterprise Starter Kit** combining:
-- 🧱 **Clean Architecture** — strict separation of concerns across 4 layers
-- ⚡ **CQRS + MediatR** — commands and queries with a full pipeline
-- 📬 **Transactional Outbox Pattern** — safe domain event delivery
-- 🔐 **ABP Framework** — multi-tenancy, identity, OpenIddict OIDC
-- 📊 **Serilog** — structured JSON logging
-- 🐘 **PostgreSQL** + **Redis** + **MailHog** via Docker Compose
+A **production-grade, open-source Enterprise Starter Kit** designed for building highly scalable, maintainable, and modular applications. 
+
+This repository bridges the gap between strict **Clean Architecture** boundaries and the modular, feature-rich capabilities of the **ABP Framework**. 
+
+## ✨ Key Features & Architecture
+- **.NET 10 & C# 14**: Leveraging the latest language features and runtime performance improvements.
+- **Strict Clean Architecture**: Core domain logic has zero dependencies on frameworks or infrastructure.
+- **CQRS with MediatR**: Commands and Queries are strictly separated, ensuring distinct read and write models. 
+- **ABP Framework 10.4**: Integrated strictly at the Infrastructure layer for Cross-Cutting concerns (Identity, Multitenancy, OpenIddict).
+- **Transactional Outbox Pattern**: Guaranteed local domain event delivery and distributed messaging using background workers (no dual-write problems).
+- **Central Package Management**: Enforced using `Directory.Packages.props` for all NuGet dependencies.
+- **PostgreSQL & Redis**: Pre-configured infrastructure using Entity Framework Core 10 and StackExchange.Redis.
+- **Pipeline Behaviors**: Automatic logging, FluentValidation, and EF Core Transaction management wrapping MediatR requests.
 
 ---
 
-## 📐 Architecture
+## 📁 Repository Structure
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  HttpApi  (Controllers, Middleware, Program.cs)                      │
-│    ↓ sends IRequest via ISender                                      │
-├─────────────────────────────────────────────────────────────────────┤
-│  Application  (Commands, Queries, Validators, Event Handlers)        │
-│    ↓ calls repository interfaces, raises domain events               │
-├─────────────────────────────────────────────────────────────────────┤
-│  Domain  (Aggregates, Value Objects, Events, Repository Interfaces)  │
-│    ← ZERO external dependencies                                       │
-├─────────────────────────────────────────────────────────────────────┤
-│  Infrastructure  (EF Core, Repositories, Outbox Relay, Redis)        │
-└─────────────────────────────────────────────────────────────────────┘
+The monorepo uses a strictly layered approach to enforce dependency rules (Inner layers know nothing of outer layers):
+
+```mermaid
+graph TD
+    HttpApi[HTTP API / Presentation] --> Application
+    Infrastructure --> Application
+    Application --> Domain
+    Infrastructure --> ABP[ABP Modules & EF Core]
 ```
 
-### MediatR Pipeline (per request)
-
-```
-Request → LoggingBehaviour → ValidationBehaviour → TransactionBehaviour → Handler
-```
+- `src/Domain`: Enterprise business rules, Entities, Value Objects, Domain Exceptions, and Interface abstractions.
+- `src/Application`: Application business rules, CQRS Handlers (Commands/Queries), DTOs, and FluentValidation validators.
+- `src/Infrastructure`: Implementation of interfaces, EF Core DbContext, Outbox pattern relay, and ABP Framework integrations.
+- `src/HttpApi`: REST endpoints, Controllers, Swagger/OpenAPI setup, and Middleware pipelines.
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
+- [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+- Docker & Docker Compose
+- (Optional) EF Core CLI `dotnet tool install --global dotnet-ef`
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+### 1. Spin up Infrastructure dependencies
+From the root of the project, start the required PostgreSQL and Redis containers:
+```bash
+docker-compose up -d
+```
+*Note: A `docker-compose.override.yml` is included for local port bindings.*
 
-### 1. Clone & spin up infrastructure
+### 2. Apply EF Core Migrations
+The application is configured to automatically apply pending migrations on startup in Development and Staging environments. Alternatively, you can apply them manually:
 
 ```bash
-git clone https://github.com/qmmughal/enterprise-starter-kit.git
-cd enterprise-kit
-
-docker compose up -d
+cd src/Infrastructure/EnterpriseKit.Infrastructure
+dotnet ef database update -s ../../HttpApi/EnterpriseKit.HttpApi/EnterpriseKit.HttpApi.csproj
 ```
 
-This starts:
-| Service | Port | Purpose |
-|---|---|---|
-| PostgreSQL 16 | `5432` | Primary database |
-| Redis 7 | `6379` | Distributed cache |
-| MailHog | `1025` / `8025` | SMTP mock + Web UI |
-
-### 2. Apply database migrations
-
+### 3. Run the Application
+Start the REST API:
 ```bash
-dotnet ef migrations add InitialCreate \
-  --project src/Infrastructure/EnterpriseKit.Infrastructure \
-  --startup-project src/HttpApi/EnterpriseKit.HttpApi
-
-dotnet ef database update \
-  --startup-project src/HttpApi/EnterpriseKit.HttpApi
+cd src/HttpApi/EnterpriseKit.HttpApi
+dotnet run
 ```
-
-### 3. Run the API
-
-```bash
-dotnet run --project src/HttpApi/EnterpriseKit.HttpApi
-```
-
-Swagger UI: **http://localhost:5000** (served at root in development)
-MailHog UI: **http://localhost:8025**
+Once started, navigate to `https://localhost:5001` (or whichever port Kestrel bounds to) to view the **Swagger OpenAPI documentation**.
 
 ---
 
-## 🧪 Running Tests
+## 🛠️ The Outbox Pattern Explained
 
-```bash
-# All tests
-dotnet test
+To prevent distributed data inconsistency ("Dual-Write Problem"), this kit utilizes the **Transactional Outbox Pattern**.
 
-# Domain unit tests only
-dotnet test tests/Domain.UnitTests
-
-# Application unit tests only
-dotnet test tests/Application.UnitTests
-```
+1. When a Domain Entity emits an `IDomainEvent` (e.g., `OrderPlacedEvent`), the event is intercepted during `DbContext.SaveChangesAsync()`.
+2. The event is serialized into a generic `OutboxMessage` entity.
+3. Both the domain changes and the Outbox message are committed to the database in **a single atomic transaction**.
+4. The `OutboxRelayService` (a background `IHostedService`) continuously polls the database for unpublished messages and dispatches them via MediatR's `IPublisher`.
 
 ---
 
-## 🗂️ Project Structure
-
-```
-EnterpriseKit/
-├── src/
-│   ├── Domain/EnterpriseKit.Domain/         ← ZERO deps, pure C#
-│   │   ├── Common/                          ← Entity, AggregateRoot, ValueObject
-│   │   ├── Exceptions/                      ← DomainException, NotFoundException
-│   │   ├── Interfaces/Repositories/         ← Repository contracts
-│   │   └── Orders/                          ← Order aggregate + Money VO + Events
-│   │
-│   ├── Application/EnterpriseKit.Application/
-│   │   ├── Common/Behaviours/               ← Logging, Validation, Transaction
-│   │   ├── Common/Mappings/                 ← AutoMapper profiles
-│   │   └── Orders/
-│   │       ├── Commands/                    ← PlaceOrder, CancelOrder
-│   │       ├── Queries/                     ← GetOrderById, GetOrders (paged)
-│   │       └── EventHandlers/               ← OrderPlacedEventHandler
-│   │
-│   ├── Infrastructure/EnterpriseKit.Infrastructure/
-│   │   ├── Persistence/                     ← ApplicationDbContext, EF configs
-│   │   ├── Outbox/                          ← OutboxMessage, OutboxRelayService
-│   │   └── DependencyInjection/             ← InfrastructureServiceExtensions
-│   │
-│   └── HttpApi/EnterpriseKit.HttpApi/
-│       ├── Controllers/                     ← OrdersController
-│       ├── Middleware/                      ← GlobalExceptionMiddleware (RFC 7807)
-│       ├── Program.cs
-│       └── Dockerfile
-│
-├── tests/
-│   ├── Domain.UnitTests/
-│   └── Application.UnitTests/
-│
-├── infra/postgres/init.sql
-├── docker-compose.yml
-└── docker-compose.override.yml
-```
-
----
-
-## 📬 Transactional Outbox Pattern
-
-Domain events are **never published inline**. The flow is:
-
-```
-Command Handler
-  → mutates aggregate (raises domain event)
-  → SaveChangesAsync()
-       → OutboxExtensions.DispatchDomainEventsToOutbox()
-            → serializes events → INSERT into outbox_messages
-            → all inside ONE transaction ✓
-
-OutboxRelayService (BackgroundService, polls every 5s)
-  → reads unprocessed outbox rows
-  → deserializes → IPublisher.Publish()
-  → marks row as processed
-```
-
-This guarantees **at-least-once delivery**. Event handlers must be idempotent.
-
----
-
-## 🔐 Authentication
-
-The API uses **JWT Bearer** authentication. Configure your identity provider in `appsettings.json`:
-
-```json
-{
-  "Auth": {
-    "Authority": "https://your-identity-server",
-    "Audience": "enterprise-kit-api"
-  }
-}
-```
-
-For local development without an identity server, you can disable auth by removing `[Authorize]` from controllers or using a local JWT tool.
-
----
-
-## 🛠️ Adding a New Feature
-
-Follow this checklist for any new bounded-context feature:
-
-```
-1. Domain:       Add Entity/AggregateRoot + Value Objects + Domain Events
-2. Domain:       Add IRepository interface
-3. Application:  Add Command/Query records
-4. Application:  Add FluentValidation validator
-5. Application:  Add IRequestHandler<> handler
-6. Application:  Add INotificationHandler<> for domain events
-7. Infrastructure: Add EF IEntityTypeConfiguration<>
-8. Infrastructure: Add concrete Repository implementation
-9. Infrastructure: Register in InfrastructureServiceExtensions
-10. HttpApi:     Add Controller action → mediator.Send(command)
-11. Tests:       Domain unit tests, validator tests, handler tests
-```
-
----
+## 🏗️ Code Quality & CI/CD
+- **Global Analyzers**: Strict C# analyzers are enabled (`<EnableNETAnalyzers>true</EnableNETAnalyzers>`) with `AnalysisMode=Recommended`.
+- **GitHub Actions**: Every Pull Request and push to `main` runs a workflow (`.github/workflows/ci.yml`) to compile the solution and execute the `xUnit` test suites.
 
 ## 📄 License
-
-MIT — see [LICENSE](LICENSE).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
