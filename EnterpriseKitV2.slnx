@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Application/">
+    <Project Path="src/Application/EnterpriseKit.Application/EnterpriseKit.Application.csproj" />
+  </Folder>
+  <Folder Name="/src/Domain/">
+    <Project Path="src/Domain/EnterpriseKit.Domain/EnterpriseKit.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/HttpApi/">
+    <Project Path="src/HttpApi/EnterpriseKit.HttpApi/EnterpriseKit.HttpApi.csproj" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="src/Infrastructure/EnterpriseKit.Infrastructure/EnterpriseKit.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Application.UnitTests/Application.UnitTests.csproj" />
+    <Project Path="tests/Domain.UnitTests/Domain.UnitTests.csproj" />
+  </Folder>
+</Solution>

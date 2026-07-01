@@ -1,0 +1,67 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup Label="ABP Framework 10.x (.NET 10)">
+    <PackageVersion Include="Volo.Abp.Core"                                    Version="10.4.1" />
+    <PackageVersion Include="Volo.Abp.EntityFrameworkCore"                     Version="10.4.1" />
+    <PackageVersion Include="Volo.Abp.EntityFrameworkCore.PostgreSql"          Version="10.4.1" />
+    <PackageVersion Include="Volo.Abp.Identity.EntityFrameworkCore"            Version="10.4.1" />
+    <PackageVersion Include="Volo.Abp.TenantManagement.EntityFrameworkCore"    Version="10.4.1" />
+    <PackageVersion Include="Volo.Abp.OpenIddict.EntityFrameworkCore"          Version="10.4.1" />
+    <PackageVersion Include="Volo.Abp.AspNetCore.Mvc"                          Version="10.4.1" />
+  </ItemGroup>
+
+  <ItemGroup Label="MediatR (last fully open-source version)">
+    <PackageVersion Include="MediatR"                                           Version="12.5.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="FluentValidation">
+    <PackageVersion Include="FluentValidation"                                  Version="12.0.0" />
+    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions"   Version="12.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="AutoMapper">
+    <PackageVersion Include="AutoMapper"                                        Version="14.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="EF Core 10.x">
+    <PackageVersion Include="Microsoft.EntityFrameworkCore"                    Version="10.0.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design"             Version="10.0.0" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL"            Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Extensions">
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions"        Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions"        Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions"  Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Serilog">
+    <PackageVersion Include="Serilog.AspNetCore"                               Version="9.0.0" />
+    <PackageVersion Include="Serilog.Formatting.Compact"                       Version="3.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.Thread"                         Version="4.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.Environment"                    Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Caching">
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis"  Version="10.0.0" />
+    <PackageVersion Include="StackExchange.Redis"                               Version="2.8.22" />
+  </ItemGroup>
+
+  <ItemGroup Label="API">
+    <PackageVersion Include="Swashbuckle.AspNetCore"                           Version="8.1.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer"   Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Testing">
+    <PackageVersion Include="xunit"                                             Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio"                         Version="3.0.1" />
+    <PackageVersion Include="Moq"                                               Version="4.20.72" />
+    <PackageVersion Include="FluentAssertions"                                  Version="8.2.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk"                           Version="17.13.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory"           Version="10.0.0" />
+  </ItemGroup>
+</Project>

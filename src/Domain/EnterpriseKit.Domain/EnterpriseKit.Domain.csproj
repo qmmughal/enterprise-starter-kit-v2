@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>EnterpriseKit.Domain</AssemblyName>
+    <RootNamespace>EnterpriseKit.Domain</RootNamespace>
+  </PropertyGroup>
+
+  <!-- Domain only takes MediatR for the INotification marker — no other framework deps -->
+  <ItemGroup>
+    <PackageReference Include="MediatR" />
+  </ItemGroup>
+
+</Project>
