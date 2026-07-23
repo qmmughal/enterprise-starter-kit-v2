@@ -1,10 +1,12 @@
-# 🏗️ EnterpriseKit V2 — .NET Enterprise Starter Kit
+# 🏗️ EnterpriseKit V2 — .NET 10 Enterprise Starter Kit
 
 [![CI](https://github.com/qmmughal/enterprise-starter-kit-v2/actions/workflows/ci.yml/badge.svg)](https://github.com/qmmughal/enterprise-starter-kit-v2/actions/workflows/ci.yml)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A **production-grade, open-source Enterprise Starter Kit** combining:
+> **Preferred starter kit** for new projects. Looking for .NET 8 LTS? Use [enterprise-starter-kit](https://github.com/qmmughal/enterprise-starter-kit).
+
+A **production-grade, open-source Enterprise Starter Kit** targeting **.NET 10** combining:
 - 🧱 **Clean Architecture** — strict separation of concerns across 4 layers
 - ⚡ **CQRS + MediatR** — commands and queries with a full pipeline
 - 📬 **Transactional Outbox Pattern** — safe domain event delivery
@@ -43,14 +45,14 @@ Request → LoggingBehaviour → ValidationBehaviour → TransactionBehaviour �
 
 ### Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ### 1. Clone & spin up infrastructure
 
 ```bash
-git clone https://github.com/qmmughal/enterprise-starter-kit.git
-cd enterprise-kit
+git clone https://github.com/qmmughal/enterprise-starter-kit-v2.git
+cd enterprise-starter-kit-v2
 
 docker compose up -d
 ```
