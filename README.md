@@ -201,6 +201,18 @@ Follow this checklist for any new bounded-context feature:
 
 ---
 
+## 💼 Support & Consulting
+
+The kit itself stays free and MIT-licensed. For teams adopting this architecture commercially, paid support is available covering:
+
+- Architecture review of your fork/adaptation
+- Office hours for the MediatR pipeline, outbox relay, and multi-tenancy setup
+- A private channel for implementation questions during rollout
+
+Reach out via the contact links on the [profile README](https://github.com/qmmughal#lets-connect).
+
+---
+
 ## 📄 License
 
 MIT — see [LICENSE](LICENSE).
